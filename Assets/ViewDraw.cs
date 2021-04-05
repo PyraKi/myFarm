@@ -7,19 +7,33 @@ public class ViewDraw : MonoBehaviour
     Vector3 current_position = Vector3.zero;
     Vector3 camera_position = Vector3.zero;
 
-    public float minXPosition = -20.0f; // left border
-    public float maxXPosition = 20.0f; //  right border
-    public float minYPosition = -15.0f; // top border
-    public float maxYPosition = 15.0f; //  down border
+    [SerializeField]
+    float maxXPosition = 20.0f; //  right border
+    [SerializeField]
+    float minXPosition = -20.0f; // left border
+    [SerializeField]
+    float minYPosition = -15.0f; // top border
+    [SerializeField]
+    float maxYPosition = 15.0f; //  down border
+
+    Camera mainCamera;
+
+    float touchesPrevPosDifference, touchesCurPosDifference, zoomModifier;
+
+    Vector2 firstTouchPrevPos, secondTouchPrevPos;
+
+    [SerializeField]
+    float zoomModifierSpeed = 0.03f;
 
     // Use this for initialization
     void Start()
     {
-
+        mainCamera = GetComponent<Camera>();
     }
 
     void Update()
     {
+        // Move camera
         if (Input.GetMouseButtonDown(0))
         {
             hit_position = Input.mousePosition;
@@ -31,6 +45,28 @@ public class ViewDraw : MonoBehaviour
             current_position = Input.mousePosition;
             LeftMouseDrag();
         }
+        // Zoom camera
+        if (Input.touchCount == 2)
+        {
+            Touch firstTouch = Input.GetTouch(0);
+            Touch secondTouch = Input.GetTouch(1);
+
+            firstTouchPrevPos = firstTouch.position - firstTouch.deltaPosition;
+            secondTouchPrevPos = secondTouch.position - secondTouch.deltaPosition;
+
+            touchesPrevPosDifference = (firstTouchPrevPos - secondTouchPrevPos).magnitude;
+            touchesCurPosDifference = (firstTouch.position - secondTouch.position).magnitude;
+
+            zoomModifier = (firstTouch.deltaPosition - secondTouch.deltaPosition).magnitude * zoomModifierSpeed;
+
+            if (touchesPrevPosDifference > touchesCurPosDifference)
+                mainCamera.orthographicSize += zoomModifier;
+            if (touchesPrevPosDifference < touchesCurPosDifference)
+                mainCamera.orthographicSize -= zoomModifier;
+
+        }
+
+        mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 5f, 8f);
     }
 
     void LeftMouseDrag()
@@ -48,8 +84,9 @@ public class ViewDraw : MonoBehaviour
 
         Vector3 position = camera_position + direction;
         // set limit camera move the edge of map
-        position.x = Mathf.Clamp(position.x, minXPosition, maxXPosition);
-        position.y = Mathf.Clamp(position.y, minYPosition, maxYPosition);
+        float size = mainCamera.orthographicSize;
+        position.x = Mathf.Clamp(position.x, (minXPosition * (5 / size)), (maxXPosition * (5 / size)));
+        position.y = Mathf.Clamp(position.y, (minYPosition * (5 / size)), (maxYPosition * (5 / size)));
         // Debug.Log(position);
         transform.position = position;
     }
