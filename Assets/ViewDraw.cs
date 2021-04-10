@@ -66,7 +66,7 @@ public class ViewDraw : MonoBehaviour
 
         }
 
-        mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 5f, 8f);
+        mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 5f, 10f);
     }
 
     void LeftMouseDrag()

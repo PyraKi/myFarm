@@ -9,8 +9,7 @@ public class Land : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GeneraterLand(-4.5f, -3.5f, 3, 3);
-        GeneraterLand(-4.5f, -0.5f, 9, 3);
+        GeneraterLand(-4.5f, -3.5f, 15, 6);
         GeneraterLand(-1.5f, 2.5f, 9, 9);
         GeneraterLand(7.5f, 2.5f, 3, 9);
     }
