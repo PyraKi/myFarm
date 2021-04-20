@@ -1,5 +1,6 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class ViewDraw : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class ViewDraw : MonoBehaviour
 
     void Update()
     {
-        // Move camera
+     // Move camera
         if (Input.GetMouseButtonDown(0))
         {
             hit_position = Input.mousePosition;
