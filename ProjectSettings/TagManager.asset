@@ -7,6 +7,8 @@ TagManager:
   - BoatTag
   - Land
   - Seed
+  - Chickens
+  - Eggs
   layers:
   - Default
   - TransparentFX

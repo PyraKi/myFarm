@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class Plant : MonoBehaviour, IPointerUpHandler
 {
@@ -13,11 +11,18 @@ public class Plant : MonoBehaviour, IPointerUpHandler
     private void Start()
     {
         sprite = GetComponent<SpriteRenderer>();
+        int perCent = RandomNumber(0, 100);
+       /* if(perCent < 50 && sprite.sortingOrder == 0)
+        {
+            sprite.sortingOrder = 1;
+            gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("grass");
+            Debug.Log(gameObject.name);
+        }*/
     }
 
     void Update()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && !isShowUISeed)
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             Vector3 pos = Input.GetTouch(0).position;
             //We transform the touch position into word space from screen space and store it.
@@ -26,7 +31,7 @@ public class Plant : MonoBehaviour, IPointerUpHandler
             //Debug.Log("Touched " + touchPosWorld.x + "" +  touchPosWorld.y);
             //We now raycast with this information. If we have hit something we can process it.
             RaycastHit2D hitInformation = Physics2D.Raycast(touchPosWorld2D, Camera.main.transform.forward);
-            if (hitInformation.collider != null)
+            if (hitInformation.collider != null && !isShowUISeed)
             {
                 //We should have hit something with a 2D Physics collider!
                 touchedObject = hitInformation.transform.gameObject;
@@ -35,8 +40,16 @@ public class Plant : MonoBehaviour, IPointerUpHandler
                 {
                     if (sprite)
                         sprite.sortingOrder = 1;
-                    GameObject.Find("SVSeed").transform.position = new Vector2(pos.x + 140, pos.y + 140);
-                    isShowUISeed = true;
+                    if (touchedObject.GetComponent<SpriteRenderer>().sprite == null)
+                    {
+                        GameObject.Find("SVSeed").transform.position = new Vector2(pos.x + 140, pos.y + 140);
+                        isShowUISeed = true;
+                    }
+                }
+                else
+                {
+                    GameObject.Find("SVSeed").transform.position = new Vector2(-200, 0);
+                    isShowUISeed = false;
                 }
             }
             else
@@ -53,9 +66,19 @@ public class Plant : MonoBehaviour, IPointerUpHandler
         int numSeed = Int32.Parse(nameSeed);
         if (touchedObject.tag == "Land")
         {
-            touchedObject.GetComponent<SpriteRenderer>().sprite = Resources.LoadAll<Sprite>("farming")[numSeed-3];
+            touchedObject.GetComponent<SpriteRenderer>().sprite = Resources.LoadAll<Sprite>("farming")[numSeed-1];
             GameObject.Find("SVSeed").transform.position = new Vector2(-200, 0);
             isShowUISeed = false;
+        }
+    }
+
+    private static readonly System.Random random = new System.Random();
+    private static readonly object syncLock = new object();
+    public static int RandomNumber(int min, int max)
+    {
+        lock (syncLock)
+        { // synchronize
+            return random.Next(min, max);
         }
     }
 }
