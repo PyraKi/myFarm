@@ -30,6 +30,7 @@ public class ViewDraw : MonoBehaviour
     void Start()
     {
         mainCamera = GetComponent<Camera>();
+        mainCamera.orthographicSize = 10f;
     }
 
     void Update()

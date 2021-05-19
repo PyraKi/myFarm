@@ -9,14 +9,12 @@ public class Animal : MonoBehaviour
     private float timeawait;
     private float hungry;
     private float laying;
-    private GameObject feedsign;
+    private bool isfeedsign;
+
 
     private void Start()
     {
-        feedsign = new GameObject("feedsign");
-        feedsign.AddComponent<SpriteRenderer>();
-        feedsign.GetComponent<SpriteRenderer>().sprite = Resources.LoadAll<Sprite>("farming")[65];
-        feedsign.transform.parent = this.gameObject.transform;
+        isfeedsign = false;
         speed = 2;
         timeRemaining = 0;
         timeawait = 0;
@@ -89,10 +87,19 @@ public class Animal : MonoBehaviour
         egg.GetComponent<SpriteRenderer>().sprite = Resources.LoadAll<Sprite>("farming")[67];
     }
 
+    private GameObject feedsign;
     private void feed()
     {
-        feedsign.transform.position = new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z);
-        feedsign.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        if (!isfeedsign)
+        {
+            feedsign = new GameObject("feedsign");
+            feedsign.AddComponent<SpriteRenderer>();
+            feedsign.GetComponent<SpriteRenderer>().sprite = Resources.LoadAll<Sprite>("farming")[65];
+            feedsign.transform.parent = this.gameObject.transform;
+            feedsign.transform.position = new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z);
+            feedsign.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            isfeedsign = true;
+        }
         //Touch cho an
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
@@ -111,7 +118,8 @@ public class Animal : MonoBehaviour
                 if (touchedObject.tag == "Chickens")
                 {
                     //TODO - su san pham cho an, them thoi gian doi
-                    feedsign.GetComponent<SpriteRenderer>().sortingOrder = 0;
+                    isfeedsign = false;
+                    Destroy(feedsign);
                     hungry = 10;
                 }
             }
