@@ -22,7 +22,6 @@ public class Plant : MonoBehaviour, IPointerUpHandler
         GameObject.Find("BtnCloseSeed").GetComponent<Button>().onClick.AddListener(ButtonClose);
         if (sprite)
             sprite.sortingOrder = 1;
-        // QuickSaveWriter.Create("myFarmWarehouse").Write("Gold", 4700).Commit();
         if (QuickSaveReader.Create("myFarmLand").Exists(this.gameObject.name))
         {
             /*Land land = QuickSaveReader.Create("myFarmLand").Read<Land>(this.gameObject.name);

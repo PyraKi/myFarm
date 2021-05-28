@@ -157,7 +157,6 @@ public class LoginManager : MonoBehaviour
                 warningLoginText.text = "";
                 //TO-DO move to main-game scene
                 SceneManager.LoadScene("MainScene");
-                CreateDataBase();
             }
         }
     }
@@ -240,19 +239,4 @@ public class LoginManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void CreateDataBase()
-    {
-        if (!QuickSaveReader.Create("myFarmWarehouse").Exists("Gold"))
-            QuickSaveWriter.Create("myFarmWarehouse")
-            .Write("Gold", 800)
-            .Write("Carrot", 0)
-            .Write("Cabbage", 0)
-            .Write("Radish", 0)
-            .Write("Strawberry", 0)
-            .Write("Corn", 0)
-            .Write("Eggs", 0)
-            .Commit();
-    }
 }

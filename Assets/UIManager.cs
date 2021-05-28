@@ -35,16 +35,26 @@ public class UIManager : MonoBehaviour
             SceneManager.LoadScene("LoginScene");
         }
         StartCoroutine(refCoin());
-       /*  QuickSaveWriter.Create("myFarmStables").Write("Chickens", 0).Commit();
-        QuickSaveWriter.Create("myFarmWarehouse")
-           .Write("Gold", 800)
-           .Write("Carrot", 3)
-           .Write("Cabbage", 2)
-           .Write("Radish", 4)
-           .Write("Strawberry", 1)
-           .Write("Corn", 9)
-           .Write("Eggs", 5)
-           .Commit();*/
+        /*  QuickSaveWriter.Create("myFarmStables").Write("Chickens", 0).Commit();
+         QuickSaveWriter.Create("myFarmWarehouse")
+            .Write("Gold", 800)
+            .Write("Carrot", 3)
+            .Write("Cabbage", 2)
+            .Write("Radish", 4)
+            .Write("Strawberry", 1)
+            .Write("Corn", 9)
+            .Write("Eggs", 5)
+            .Commit();*/
+        if (!QuickSaveReader.Create("myFarmWarehouse").Exists("Gold"))
+            QuickSaveWriter.Create("myFarmWarehouse")
+            .Write("Gold", 800)
+            .Write("Carrot", 0)
+            .Write("Cabbage", 0)
+            .Write("Radish", 0)
+            .Write("Strawberry", 0)
+            .Write("Corn", 0)
+            .Write("Eggs", 0)
+            .Commit();
     }
 
     IEnumerator refCoin()
