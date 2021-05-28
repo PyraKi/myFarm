@@ -35,40 +35,43 @@ public class ViewDraw : MonoBehaviour
 
     void Update()
     {
-     // Move camera
-        if (Input.GetMouseButtonDown(0))
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            hit_position = Input.mousePosition;
-            camera_position = transform.position;
+            // Move camera
+            if (Input.GetMouseButtonDown(0))
+            {
+                hit_position = Input.mousePosition;
+                camera_position = transform.position;
 
+            }
+            if (Input.GetMouseButton(0))
+            {
+                current_position = Input.mousePosition;
+                LeftMouseDrag();
+            }
+            // Zoom camera
+            if (Input.touchCount == 2)
+            {
+                Touch firstTouch = Input.GetTouch(0);
+                Touch secondTouch = Input.GetTouch(1);
+
+                firstTouchPrevPos = firstTouch.position - firstTouch.deltaPosition;
+                secondTouchPrevPos = secondTouch.position - secondTouch.deltaPosition;
+
+                touchesPrevPosDifference = (firstTouchPrevPos - secondTouchPrevPos).magnitude;
+                touchesCurPosDifference = (firstTouch.position - secondTouch.position).magnitude;
+
+                zoomModifier = (firstTouch.deltaPosition - secondTouch.deltaPosition).magnitude * zoomModifierSpeed;
+
+                if (touchesPrevPosDifference > touchesCurPosDifference)
+                    mainCamera.orthographicSize += zoomModifier;
+                if (touchesPrevPosDifference < touchesCurPosDifference)
+                    mainCamera.orthographicSize -= zoomModifier;
+
+            }
+
+            mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 5f, 10f);
         }
-        if (Input.GetMouseButton(0))
-        {
-            current_position = Input.mousePosition;
-            LeftMouseDrag();
-        }
-        // Zoom camera
-        if (Input.touchCount == 2)
-        {
-            Touch firstTouch = Input.GetTouch(0);
-            Touch secondTouch = Input.GetTouch(1);
-
-            firstTouchPrevPos = firstTouch.position - firstTouch.deltaPosition;
-            secondTouchPrevPos = secondTouch.position - secondTouch.deltaPosition;
-
-            touchesPrevPosDifference = (firstTouchPrevPos - secondTouchPrevPos).magnitude;
-            touchesCurPosDifference = (firstTouch.position - secondTouch.position).magnitude;
-
-            zoomModifier = (firstTouch.deltaPosition - secondTouch.deltaPosition).magnitude * zoomModifierSpeed;
-
-            if (touchesPrevPosDifference > touchesCurPosDifference)
-                mainCamera.orthographicSize += zoomModifier;
-            if (touchesPrevPosDifference < touchesCurPosDifference)
-                mainCamera.orthographicSize -= zoomModifier;
-
-        }
-
-        mainCamera.orthographicSize = Mathf.Clamp(mainCamera.orthographicSize, 5f, 10f);
     }
 
     void LeftMouseDrag()

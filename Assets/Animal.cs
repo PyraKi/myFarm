@@ -1,16 +1,17 @@
 using UnityEngine;
-
+using CI.QuickSave;
+using System.Collections;
+using System;
 public class Animal : MonoBehaviour
 {
-    [SerializeField] 
-    private float speed = 2;
+    private float speed;
     private Vector3 target;
     private float timeRemaining;
     private float timeawait;
-    private float hungry;
-    private float laying;
     private bool isfeedsign;
-
+    private int hungry;
+    private int layTime;
+    private GameObject feedsign;
 
     private void Start()
     {
@@ -18,27 +19,31 @@ public class Animal : MonoBehaviour
         speed = 2;
         timeRemaining = 0;
         timeawait = 0;
-        hungry = 10;
-        laying = 15;
     }
     // Update is called once per frame
     void Update()
     {
-        if(hungry > 0)
-        {
+        StartCoroutine(countTime());
+        if (hungry < 0)
             move();
-            hungry -= Time.deltaTime;
-            laying -= Time.deltaTime;
-            if (laying < 0)
-            {
-                laying = 15;
-                laysegg();
-            }
-        }
         else
+            StartCoroutine(callfeed());
+    }
+
+    IEnumerator countTime()
+    {
+        if (QuickSaveReader.Create("myFarmStables").Exists("Chickens"))
         {
-            feed();
+            DateTime TimeFeed = QuickSaveReader.Create("myFarmStables").Read<DateTime>("TimeFeed");
+            DateTime TimeLay = QuickSaveReader.Create("myFarmStables").Read<DateTime>("TimeLay");
+
+            hungry = DateTime.Compare(DateTime.Now, TimeFeed);
+            layTime = DateTime.Compare(DateTime.Now, TimeLay);
+
+            if (layTime > 0 && hungry < 0)
+                laysegg();            
         }
+        yield return new WaitForSecondsRealtime(1f);
     }
     private void move()
     {
@@ -85,10 +90,10 @@ public class Animal : MonoBehaviour
         egg.AddComponent<Eggs>();
         egg.GetComponent<SpriteRenderer>().sortingOrder = 1;
         egg.GetComponent<SpriteRenderer>().sprite = Resources.LoadAll<Sprite>("farming")[67];
+        QuickSaveWriter.Create("myFarmStables").Write("TimeLay", DateTime.Now.AddSeconds(5 * 60)).Commit();
     }
 
-    private GameObject feedsign;
-    private void feed()
+    IEnumerator callfeed()
     {
         if (!isfeedsign)
         {
@@ -99,6 +104,7 @@ public class Animal : MonoBehaviour
             feedsign.transform.position = new Vector3(transform.position.x, transform.position.y + 1.2f, transform.position.z);
             feedsign.GetComponent<SpriteRenderer>().sortingOrder = 1;
             isfeedsign = true;
+            yield return new WaitForSecondsRealtime(1f);
         }
         //Touch cho an
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
@@ -117,10 +123,23 @@ public class Animal : MonoBehaviour
                 //touchedObject should be the object someone touched.
                 if (touchedObject.tag == "Chickens")
                 {
-                    //TODO - su san pham cho an, them thoi gian doi
-                    isfeedsign = false;
-                    Destroy(feedsign);
-                    hungry = 10;
+                    int gold = QuickSaveReader.Create("myFarmWarehouse").Read<int>("Gold");
+                    int ciks = QuickSaveReader.Create("myFarmStables").Read<int>("Chickens");
+                    if (gold >= ciks * 15)
+                    {
+                        if (layTime < 0)
+                        {
+                            DateTime TimeFeed = QuickSaveReader.Create("myFarmStables").Read<DateTime>("TimeFeed");
+                            DateTime TimeLay = QuickSaveReader.Create("myFarmStables").Read<DateTime>("TimeLay");
+                            QuickSaveWriter.Create("myFarmStables").Write("TimeLay", DateTime.Now.Add(TimeLay.Subtract(TimeFeed))).Commit();
+                        }
+                        Destroy(feedsign);
+                        hungry = 1;
+                        isfeedsign = false;
+                        QuickSaveWriter.Create("myFarmStables").Write("TimeFeed", DateTime.Now.AddSeconds(2 * 60)).Commit();
+                        gold -= ciks * 15;
+                        QuickSaveWriter.Create("myFarmWarehouse").Write("Gold", gold).Commit();
+                    }
                 }
             }
         }
