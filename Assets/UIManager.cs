@@ -46,6 +46,7 @@ public class UIManager : MonoBehaviour
             .Write("Eggs", 5)
             .Commit();*/
         if (!QuickSaveReader.Create("myFarmWarehouse").Exists("Gold"))
+        {
             QuickSaveWriter.Create("myFarmWarehouse")
             .Write("Gold", 800)
             .Write("Carrot", 0)
@@ -55,6 +56,7 @@ public class UIManager : MonoBehaviour
             .Write("Corn", 0)
             .Write("Eggs", 0)
             .Commit();
+        }
     }
 
     IEnumerator refCoin()

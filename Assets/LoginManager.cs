@@ -5,6 +5,9 @@ using System.Collections;
 using Firebase.Auth;
 using Firebase;
 using CI.QuickSave;
+using System.Collections.Generic;
+using System;
+using UnityEngine.Android;
 
 public class LoginManager : MonoBehaviour
 {
@@ -64,13 +67,15 @@ public class LoginManager : MonoBehaviour
             Debug.Log("Instance already exists, destroying object!");
             Destroy(this);
         }
-
+    }
+    GameObject dialog = null;
+    void Start()
+    {
         //set button event
         loginButton.onClick.AddListener(LoginButton);
         signupButton.onClick.AddListener(RegisterScreen);
         registerButton.onClick.AddListener(RegisterButton);
         backButton.onClick.AddListener(LoginScreen);
-
     }
 
     //Functions to change the login screen UI
@@ -239,4 +244,5 @@ public class LoginManager : MonoBehaviour
                 }
             }
         }
+    }
 }
